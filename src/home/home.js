@@ -9,9 +9,11 @@ class Home extends Component {
     const msft = hello('msft').getAuthResponse();
 
     this.state = {
-      me: "",
+      userData: "",
       successMessage: "",
-      xlsxData: {},
+      apiData: {},
+      date: '',
+      time: '',
       token: msft.access_token
     };
 
@@ -26,28 +28,20 @@ class Home extends Component {
       'https://graph.microsoft.com/v1.0/me?$select=displayName,mail,userPrincipalName',
       { headers: { Authorization: `Bearer ${token}` } }
     ).then(res => {
-      const me = res.data;
-      this.setState({ me });
+      const userData = res.data;
+      this.setState({ userData });
     });
     axios
       .get("https://graph.microsoft.com/v1.0/drives/b!rv9qh9qe60ay10NPvtjGbxGy1-IwSUdCgPhiZyJfMXjt8D0-O3QQR5DYvhLdsgis/items/01A4OPHAHO5KQRHTRJPRA3MKJP4SXW2TEY/workbook/worksheets('Capacity tracking ')/usedRange",
-        // { index: null, values },
         { headers: { Authorization: `Bearer ${token}` } }
       )
       .then(res => {
-        // console.log(res, "API Call");
-        const xlsxData = res.data;
+        const apiData = res.data;
+        this.setState({ apiData });
+      }).then(() => {
 
-        // const successMessage = "Successfully wrote your data to demo.xlsx!";
-        this.setState({ xlsxData });
-        // const customHeadings = res.data.map(item => ({
-        //   "Article Id": item.id,
-        //   "Article Title": item.title
-        // }))
-
-        // console.log(customHeadings);
-        // setData(customHeadings)
-      })
+      }
+      )
       .catch(err => console.error(err));
   }
 
@@ -58,63 +52,66 @@ class Home extends Component {
     );
   }
 
-  renderMe() {
-    const { me } = this.state;
-    const myEmailAddress = me.mail || me.userPrincipalName;
-
+  renderUserData() {
+    const { userData } = this.state;
+    const myEmailAddress = userData.mail || userData.userPrincipalName;
+    const userViewData = <tr>
+      <td>{userData.displayName}</td>
+      <td>{myEmailAddress}</td>
+    </tr>
     return (
-      <tr>
-        <td>{me.displayName}</td>
-        <td>{myEmailAddress}</td>
-      </tr>
+
+      <table className="table stripped">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Email</th>
+          </tr>
+        </thead>
+        <tbody>
+          {userViewData}
+        </tbody>
+      </table>
     );
   }
-  renderMe2() {
-    const { xlsxData } = this.state;
-    if (Object.keys(xlsxData).length > 0) {
-      const valuesData = xlsxData.text;
-      const valueTypes = xlsxData.valueTypes;
-      var lastColIndex = 0
-      // console.table(valuesData[1], "xlsxData renderMe2");
-      for (let index = valuesData[1].length; index > 0; index--) {
-        const element = valuesData[1][index];
+  renderApiData() {
+    const { apiData } = this.state;
+    if (Object.keys(apiData).length > 0) {
+      const apiTextValuesData = apiData.text;
+      const firstRowData = apiTextValuesData[1];
+      for (let index = firstRowData.length; index > 0; index--) {
+        const element = firstRowData[index];
         if (element !== '' && element !== undefined) {
-          console.table(element, index);
+          // console.table(element, index);
           this.lastColIndex = index;
           break
         }
       }
+      const dataHeader = <thead className='table-primary'>
+        <tr>
+          <th>{firstRowData[0]}</th>
+          <th>{firstRowData[1]}</th>
+          <th>{firstRowData[this.lastColIndex]}</th>
+        </tr>
+      </thead>
+      const dataTable = <tbody>
+        {
+          apiTextValuesData.map((element, index) => {
+            return (
+              <tr key={index}>
+                <td>{element[0]}</td>
+                <td>{element[1]}</td>
+                <td>{element[this.lastColIndex]}</td>
+              </tr>
+            );
+          })}
+      </tbody>
 
-      // valuesData[1].forEach((element, index) => {
-      //   if (valueTypes[1][index] !== 'Empty') {
-      //     // console.table(element);
-      //     // this.lastCol.push(element);
-      //     console.table(element);
-      //   }
-      //   // console.log(element[element.length-10]);
-      // });
-      // console.log(valuesData, "renderMe2");
-      // console.log(xlsxData.valueTypes[0][0] == 'Empty' && xlsxData.valueTypes[0][1] == 'Empty' && xlsxData.valueTypes[0][2] == 'Empty');
       return (
-        // {/* <td>{valuesData}</td> */ }
-        //   {
-        //   valuesData.forEach(element => {
-        //     console.log(element);
-        //   })
-        // }
-        // {if (xlsxData.valueTypes.element)}
-        <tbody>
-          {
-            valuesData.map((element, index) => {
-              return (
-                <tr key={index}>
-                  <td>{element[0]}</td>
-                  <td>{element[1]}</td>
-                  <td>{element[this.lastColIndex]}</td>
-                </tr>
-              );
-            })}
-        </tbody>
+        <table className="table table-striped table-borderless border">
+          {dataHeader}
+          {dataTable}
+        </table>
       )
     } else {
       return "Loading"
@@ -123,33 +120,27 @@ class Home extends Component {
   }
 
   render() {
+    var today = new Date();
+    const date = (today.getMonth() + 1) + '-' + today.getDate();
+    const time = today.getHours() + ":" + today.getMinutes()
+    
+    const refresh = () => { window.location.reload() }
+    
     return (
       <div className='container'>
-        <table className="table stripped">
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Email</th>
-            </tr>
-          </thead>
-          <tbody>
-            {this.renderMe()}
-          </tbody>
-        </table>
-        <table className="table table-striped-columns ">
-          <thead>
-            <tr>
-              <th>Site</th>
-              <th>Supplier</th>
-              <th>Supplier</th>
-            </tr>
-          </thead>
-          {this.renderMe2()}
-        </table>
-
-        {/* <button onClick={this.onFetchExcelData}>Write to Excel</button> */}
-        <button onClick={this.onLogout}>Logout</button>
-        {/* <p>{this.state.successMessage}</p> */}
+        {this.renderUserData()}
+        <div className='row'>
+          <div className='col-1'>
+            <button onClick={this.onLogout} className="btn btn-light">Logout</button>
+          </div>
+          <div className='col-2'>
+            <button onClick={refresh} className="btn btn-light">Refresh Page</button>
+          </div>
+          <div className='col-3'>
+            <p>last Update in: {date} / {time} </p>
+          </div>
+        </div>
+        {this.renderApiData()}
       </div>
     );
   }

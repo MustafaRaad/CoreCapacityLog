@@ -19,8 +19,8 @@ class Login extends Component {
 
   render() {
     return (
-      <div>
-        <button onClick={this.onLogin}>Sign in with your Microsoft account</button>
+      <div className='container vh-100 d-flex justify-content-center align-items-center'>
+        <button onClick={this.onLogin} className="btn btn-primary btn-lg">Sign in with your Microsoft account</button>
       </div>
     );
   }
