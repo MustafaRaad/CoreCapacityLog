@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import hello from 'hellojs/dist/hello.all.js';
 import axios from 'axios';
 import { JsonToExcel } from "react-json-excel";
+import * as htmlToImage from 'html-to-image';
 
 class Home extends Component {
   constructor(props) {
@@ -21,10 +22,46 @@ class Home extends Component {
 
     // this.onFetchExcelData = this.onFetchExcelData.bind(this);
     this.onLogout = this.onLogout.bind(this);
-
+    this.createImg = this.createImg.bind(this);
 
   }
+  componentDidMount() {
+    // Set the execution time to 10:00 AM every day
+    const executionTime = new Date();
+    executionTime.setHours(14);
+    executionTime.setMinutes(48);
+    executionTime.setSeconds(0);
+
+    // Calculate the interval between now and the execution time
+    const interval = executionTime.getTime() - Date.now();
+    if (interval > 0) {
+      // Set an interval to execute the task every day at the specified time
+      this.interval = setInterval(() => {
+        console.log('Task executed! foog', interval);
+      }, interval);
+    }
+  }
+  createImg() {
+    const element = document.querySelector('#dataTable');
+    htmlToImage.toPng(element)
+      .then((dataUrl) => {
+        // console.log('excuted img');
+        // download(dataUrl, 'my-node.png');
+        var img = new Image();
+        img.src = dataUrl;
+        document.body.appendChild(img);
+      }).catch(function (error) {
+        console.error('oops, something went wrong!', error);
+      });
+
+    axios.post('/api/screenshots', { image: this.dataUrl }).then((response) => {
+      console.log(response);
+      console.log(response.data);
+    });
+  }
+
   async componentWillMount() {
+    clearInterval(this.interval);
     const { token } = this.state;
     axios.get(
       'https://graph.microsoft.com/v1.0/me?$select=displayName,mail,userPrincipalName',
@@ -41,12 +78,11 @@ class Home extends Component {
         const apiData = res.data;
         this.setState({ apiData });
       }).then(() => {
-
+        this.createImg()
       }
       )
       .catch(err => console.error(err));
   }
-
   onLogout() {
     hello('msft').logout().then(
       () => this.props.history.push('/'),
@@ -81,7 +117,7 @@ class Home extends Component {
     if (Object.keys(apiData).length > 0) {
       const apiTextValuesData = apiData.text;
       const firstRowData = apiTextValuesData[1];
-
+      var temp = '';
       // getting last index to render last date
       for (let index = firstRowData.length; index > 0; index--) {
         const element = firstRowData[index];
@@ -101,19 +137,22 @@ class Home extends Component {
       const dataTable = <tbody>
         {
           apiTextValuesData.map((element, index) => {
-            toExportData.push({ 1: element[0], 2: element[1], 3: element[this.lastColIndex] })
-            return (
-              <tr key={index}>
-                <td>{element[0]}</td>
-                <td>{element[1]}</td>
-                <td>{element[this.lastColIndex]}</td>
-              </tr>
-            );
+            if (!(element[0] === '' && element[1] === '' && element[this.lastColIndex] === '')) {
+              toExportData.push({ 1: element[0], 2: element[1], 3: element[this.lastColIndex] })
+              element[0] === '' ? element[0] = temp : temp = element[0];
+              return (
+                <tr key={index}>
+                  <td>{element[0]}</td>
+                  <td>{element[1]}</td>
+                  <td>{element[this.lastColIndex]}</td>
+                </tr>
+              );
+            }
           })}
       </tbody>
 
       return (
-        <table className="table table-striped table-borderless border">
+        <table className="table table-striped table-borderless border" id='dataTable'>
           {dataHeader}
           {dataTable}
         </table>
@@ -136,16 +175,15 @@ class Home extends Component {
         2: "2",
         3: "3"
       }
-      console.log(this.state.toExportData);
-    let isDisabled = true
-    if (this.state.userData.length > 0) {
-      this.isDisabled = true
-    }
+    console.log(this.state.toExportData);
     return (
       <div className='container'>
-    
+
         {this.renderUserData()}
         <div className='row'>
+          <div className='col-2'>
+            {/* <button onClick={this.componentWillMount.createImg()} className="btn btn-light">Refresh Pageaa</button> */}
+          </div>
           <div className='col-1'>
             <button onClick={this.onLogout} className="btn btn-light">Logout</button>
           </div>
@@ -165,7 +203,9 @@ class Home extends Component {
             <p>last Update in: {date} / {time} </p>
           </div>
         </div>
-        {this.renderApiData()}
+        <div id='dataTable' style={{ backgroundColor: "#fff" }}>
+          {this.renderApiData()}
+        </div>
       </div>
     );
   }
