@@ -4260,7 +4260,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"file-saver@npm:^2.0.5":
+"file-saver@npm:^2.0.0-rc.3, file-saver@npm:^2.0.5":
   version: 2.0.5
   resolution: "file-saver@npm:2.0.5"
   checksum: c62d96e5cebc58b4bdf3ae8a60d5cf9607ad82f75f798c33a4ee63435ac2203002584d5256a2a780eda7feb5e19dc3b6351c2212e58b3f529e63d265a7cc79f7
@@ -6844,6 +6844,7 @@ __metadata:
     react: 15.6.1
     react-bootstrap: ^2.7.0
     react-dom: 15.6.1
+    react-json-excel: ^1.1.0
     react-router-dom: ^4.1.2
     react-scripts: 1.0.10
     web-vitals: ^2.1.4
@@ -8665,6 +8666,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react-json-excel@npm:^1.1.0":
+  version: 1.1.0
+  resolution: "react-json-excel@npm:1.1.0"
+  dependencies:
+    file-saver: ^2.0.0-rc.3
+    prop-types: ^15.6.2
+    react: ^16.5.2
+  checksum: dc16dd5b15b0e5f0041cf61658218fa5b0181e384c6e0735102487d0a7f96a2dfb1625ef176c9b7a1f3df80c482bceb42bb3da0b5484bda4b058ebf309eda2bb
+  languageName: node
+  linkType: hard
+
 "react-lifecycles-compat@npm:^3.0.4":
   version: 3.0.4
   resolution: "react-lifecycles-compat@npm:3.0.4"
@@ -8780,6 +8792,17 @@ __metadata:
     object-assign: ^4.1.0
     prop-types: ^15.5.10
   checksum: 3561993680e37e4c43a132fc8a0e5d9607f85cfad865d0a9ef8c825d257492c673d9d780b991bc48e9254a4394764c713a206c9a800d05a9c6ea363879d74f55
+  languageName: node
+  linkType: hard
+
+"react@npm:^16.5.2":
+  version: 16.14.0
+  resolution: "react@npm:16.14.0"
+  dependencies:
+    loose-envify: ^1.1.0
+    object-assign: ^4.1.1
+    prop-types: ^15.6.2
+  checksum: 8484f3ecb13414526f2a7412190575fc134da785c02695eb92bb6028c930bfe1c238d7be2a125088fec663cc7cda0a3623373c46807cf2c281f49c34b79881ac
   languageName: node
   linkType: hard
 

@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import hello from 'hellojs/dist/hello.all.js';
 import axios from 'axios';
+import { JsonToExcel } from "react-json-excel";
 
 class Home extends Component {
   constructor(props) {
@@ -10,8 +11,9 @@ class Home extends Component {
 
     this.state = {
       userData: "",
-      successMessage: "",
       apiData: {},
+      toExportData: [
+      ],
       date: '',
       time: '',
       token: msft.access_token
@@ -22,7 +24,7 @@ class Home extends Component {
 
 
   }
-  async componentDidMount() {
+  async componentWillMount() {
     const { token } = this.state;
     axios.get(
       'https://graph.microsoft.com/v1.0/me?$select=displayName,mail,userPrincipalName',
@@ -75,10 +77,12 @@ class Home extends Component {
     );
   }
   renderApiData() {
-    const { apiData } = this.state;
+    const { apiData, toExportData } = this.state;
     if (Object.keys(apiData).length > 0) {
       const apiTextValuesData = apiData.text;
       const firstRowData = apiTextValuesData[1];
+
+      // getting last index to render last date
       for (let index = firstRowData.length; index > 0; index--) {
         const element = firstRowData[index];
         if (element !== '' && element !== undefined) {
@@ -97,6 +101,7 @@ class Home extends Component {
       const dataTable = <tbody>
         {
           apiTextValuesData.map((element, index) => {
+            toExportData.push({ 1: element[0], 2: element[1], 3: element[this.lastColIndex] })
             return (
               <tr key={index}>
                 <td>{element[0]}</td>
@@ -120,14 +125,25 @@ class Home extends Component {
   }
 
   render() {
-    var today = new Date();
+    let today = new Date();
     const date = (today.getMonth() + 1) + '-' + today.getDate();
     const time = today.getHours() + ":" + today.getMinutes()
-    
+
     const refresh = () => { window.location.reload() }
-    
+    const filename = "Core Capacity Log",
+      fields = {
+        1: "1",
+        2: "2",
+        3: "3"
+      }
+      console.log(this.state.toExportData);
+    let isDisabled = true
+    if (this.state.userData.length > 0) {
+      this.isDisabled = true
+    }
     return (
       <div className='container'>
+    
         {this.renderUserData()}
         <div className='row'>
           <div className='col-1'>
@@ -135,6 +151,15 @@ class Home extends Component {
           </div>
           <div className='col-2'>
             <button onClick={refresh} className="btn btn-light">Refresh Page</button>
+          </div>
+          <div className='col-2'>
+            <JsonToExcel
+              data={this.state.toExportData}
+              className="btn btn-success btn-large"
+              filename={filename}
+              fields={fields}
+              text="Download Excel"
+            />
           </div>
           <div className='col-3'>
             <p>last Update in: {date} / {time} </p>
