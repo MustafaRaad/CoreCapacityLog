@@ -54,10 +54,44 @@ class Home extends Component {
         console.error('oops, something went wrong!', error);
       });
 
-    axios.post('/api/screenshots', { image: this.dataUrl }).then((response) => {
-      console.log(response);
-      console.log(response.data);
-    });
+    // axios.post('https://hooks.slack.com/services/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', { image: this.dataUrl  }, {headers: {"content-type": "application/json"}}).then((response) => {
+    //   console.log(response);
+    //   console.log(response.data);
+    // });
+    // const apiPostUrl = 'https://hooks.slack.com/services/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'
+    const apiPostUrl = 'https://slack.com/api/auth.test'
+    const apiPostToken = 'Bearer xapp-1-A04H0DNSQR2-4588670901809-ffd95342e75cc5aa8078e66f25a318412b467f417e35b649aab5f100e5d49dce'
+
+    const apiPostBody = {
+      title: "My first Slack Message",
+      text: "Random example message text",
+      color: "#00FF00",
+    };
+    const apiPostheaders = ""
+    
+    axios({
+      method: 'post',
+      url: apiPostUrl,
+      body: apiPostBody,
+      headers: {
+        "Authorization": apiPostToken,
+        "Content-Type": "application/x-www-form-urlencoded",
+        "Accept": "application/json",
+        "Access-Control-Allow-Methods": "GET,PUT,POST,DELETE,PATCH,OPTIONS",
+        "Access-Control-Allow-Origin": "http://localhost:3000",
+        "Access-Control-Allow-Headers": "*",
+
+      },
+    }).then((res) => {
+      if (!res.ok) {
+        throw new Error(`Server error ${res.status}`);
+      }
+
+      return res.json();
+    })
+      .catch((error) => {
+        console.log(error);
+      });
   }
 
   async componentWillMount() {
@@ -147,6 +181,8 @@ class Home extends Component {
                   <td>{element[this.lastColIndex]}</td>
                 </tr>
               );
+            } else {
+              return false
             }
           })}
       </tbody>
@@ -165,7 +201,7 @@ class Home extends Component {
 
   render() {
     let today = new Date();
-    const date = (today.getMonth() + 1) + '-' + today.getDate();
+    const date = today.getDate() + '-' + (today.getMonth() + 1) + '-' + today.getFullYear();
     const time = today.getHours() + ":" + today.getMinutes()
 
     const refresh = () => { window.location.reload() }
