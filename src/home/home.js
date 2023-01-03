@@ -3,7 +3,6 @@ import hello from 'hellojs/dist/hello.all.js';
 import axios from 'axios';
 import { JsonToExcel } from "react-json-excel";
 import * as htmlToImage from 'html-to-image';
-import { WebClient } from '@slack/web-api';
 
 class Home extends Component {
   constructor(props) {
@@ -72,11 +71,8 @@ class Home extends Component {
     const body = `Token=${apiPostToken}`
     axios.post(apiPostUrl, {
       // channel: '#general',
-      text: 'Hello, world!'
+      body
     }, {
-      headers: {
-        'Authorization': `${apiPostToken}`
-      }
     }).then(res => {
       console.log(res)
     }).catch(err => {
