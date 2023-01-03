@@ -71,8 +71,11 @@ class Home extends Component {
     const body = `Token=${apiPostToken}`
     axios.post(apiPostUrl, {
       // channel: '#general',
-      body
+      text: 'Hello, world!'
     }, {
+      headers: {
+        'Authorization': `${apiPostToken}`
+      }
     }).then(res => {
       console.log(res)
     }).catch(err => {
