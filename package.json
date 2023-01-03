@@ -3,6 +3,13 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@babel/compat-data": "7.19.4",
+    "@babel/core": "7.19.6",
+    "@babel/generator": "7.19.6",
+    "@babel/helper-compilation-targets": "7.19.3",
+    "@babel/helper-create-class-features-plugin": "7.19.0",
+    "@babel/helper-module-transforms": "7.19.6",
+    "@slack/web-api": "5.3",
     "axios": "0.16.2",
     "babel-preset-es2015": "^6.24.1",
     "bootstrap": "^5.2.3",
@@ -14,7 +21,8 @@
     "react-json-excel": "^1.1.0",
     "react-router-dom": "^4.1.2",
     "react-scripts": "1.0.10",
-    "web-vitals": "^2.1.4"
+    "web-vitals": "^2.1.4",
+    "webpack": "^5.75.0"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -23,6 +31,7 @@
     "eject": "react-scripts eject"
   },
   "devDependencies": {
+    "@babel/preset-react": "^7.18.6",
     "file-saver": "^2.0.5",
     "xlsx": "^0.18.5"
   }

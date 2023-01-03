@@ -3,6 +3,7 @@ import hello from 'hellojs/dist/hello.all.js';
 import axios from 'axios';
 import { JsonToExcel } from "react-json-excel";
 import * as htmlToImage from 'html-to-image';
+import { WebClient } from '@slack/web-api';
 
 class Home extends Component {
   constructor(props) {
@@ -28,8 +29,8 @@ class Home extends Component {
   componentDidMount() {
     // Set the execution time to 10:00 AM every day
     const executionTime = new Date();
-    executionTime.setHours(14);
-    executionTime.setMinutes(48);
+    executionTime.setHours(12);
+    executionTime.setMinutes(0);
     executionTime.setSeconds(0);
 
     // Calculate the interval between now and the execution time
@@ -60,38 +61,29 @@ class Home extends Component {
     // });
     // const apiPostUrl = 'https://hooks.slack.com/services/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'
     const apiPostUrl = 'https://slack.com/api/auth.test'
-    const apiPostToken = 'Bearer xapp-1-A04H0DNSQR2-4588670901809-ffd95342e75cc5aa8078e66f25a318412b467f417e35b649aab5f100e5d49dce'
+    const apiPostToken = 'Bearer xapp-1-A04BRV40YNT-4583645743618-dd429ea159a03517209d41285427a77140ad131bc5fb4afaa9d353127ea3ef44'
 
-    const apiPostBody = {
-      title: "My first Slack Message",
-      text: "Random example message text",
-      color: "#00FF00",
-    };
-    const apiPostheaders = ""
-    
-    axios({
-      method: 'post',
-      url: apiPostUrl,
-      body: apiPostBody,
+    // const apiPostBody = {
+    //   title: "My first Slack Message",
+    //   text: "Random example message text",
+    //   color: "#00FF00",
+    // };
+
+    const body = `Token=${apiPostToken}`
+    axios.post(apiPostUrl, {
+      // channel: '#general',
+      text: 'Hello, world!'
+    }, {
       headers: {
-        "Authorization": apiPostToken,
-        "Content-Type": "application/x-www-form-urlencoded",
-        "Accept": "application/json",
-        "Access-Control-Allow-Methods": "GET,PUT,POST,DELETE,PATCH,OPTIONS",
-        "Access-Control-Allow-Origin": "http://localhost:3000",
-        "Access-Control-Allow-Headers": "*",
-
-      },
-    }).then((res) => {
-      if (!res.ok) {
-        throw new Error(`Server error ${res.status}`);
+        'Authorization': `${apiPostToken}`
       }
-
-      return res.json();
+    }).then(res => {
+      console.log(res)
+    }).catch(err => {
+      console.log(err)
     })
-      .catch((error) => {
-        console.log(error);
-      });
+
+    
   }
 
   async componentWillMount() {
